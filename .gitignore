@@ -83,6 +83,13 @@ venv.bak/
 *.sqlite-journal
 *.sqlite3-journal
 
+# Database files
+*.db
+*.db-journal
+data/*.db
+data/*.db-journal
+data/
+
 # Log files
 *.log
 

@@ -1,0 +1,24 @@
+# Git files
+.git/
+.gitignore
+.dockerignore
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE specific folders
+.idea/
+.vscode/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Test database
+test_sensor_data.db
+
+# Local data directory (we mount this as a volume, don't copy it)
+data/

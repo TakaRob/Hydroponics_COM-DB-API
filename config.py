@@ -15,8 +15,10 @@ ARDUINO_DATA_ORDER = ["sensor_id", "sensor_type", "value"]
 ARDUINO_DATA_SEPARATOR = ","
 
 # Database Configuration
-DATABASE_NAME = "sensor_data.db"
+# Store DB inside the 'data' subfolder within the container's working dir
+DATABASE_NAME = "data/sensor_data.db" # Relative path inside the app
 TABLE_NAME = "readings"
+
 
 # API Server Configuration (Served FROM the Pi)
 API_HOST = "0.0.0.0"  # Listen on all interfaces on the Pi

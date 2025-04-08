@@ -5,7 +5,8 @@ This project runs entirely on a Raspberry Pi. It reads sensor data from an Ardui
 ## For whomever puts this on the rasppi. 
 Steps: 
 1. Go through Config.py and set up the port, db name, and api port.
-2. 
+2. Download SQL lite
+3. To have these run in the background, download 
 
 
 ## Architecture
