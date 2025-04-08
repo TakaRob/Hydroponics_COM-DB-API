@@ -4,8 +4,10 @@
 FROM python:3.11-slim
 
 # Set environment variables (optional but good practice)
-ENV PYTHONDONTWRITEBYTECODE 1  # Prevents python from writing .pyc files
-ENV PYTHONUNBUFFERED 1         # Force stdout/stderr streams to be unbuffered
+ENV PYTHONDONTWRITEBYTECODE=1
+# Prevents python from writing .pyc files
+ENV PYTHONUNBUFFERED=1
+# Force stdout/stderr streams to be unbuffered
 
 # Set the working directory in the container
 WORKDIR /app
