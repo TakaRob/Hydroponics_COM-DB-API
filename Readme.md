@@ -2,6 +2,12 @@
 
 This project runs entirely on a Raspberry Pi. It reads sensor data from an Arduino connected via serial port, processes and timestamps the data, stores it in a local SQLite database, and provides a REST API to query the stored data. A manual entry GUI is also included for backup/testing.
 
+## For whomever puts this on the rasppi. 
+Steps: 
+1. Go through Config.py and set up the port, db name, and api port.
+2. 
+
+
 ## Architecture
 
 Arduino (Sensors) --> Serial Port --> Raspberry Pi --> Python Script (`serial_data_logger.py`) --> SQLite DB (`sensor_data.db`) --> Flask API (`api_server.py`)
