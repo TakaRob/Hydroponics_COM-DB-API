@@ -1,43 +1,34 @@
-# Use an official Python runtime as a parent image
-# Choose a version compatible with your code and pyserial/flask
-# Add '-slim' for a smaller image size
+# Use an official Python runtime available for amd64 and arm
 FROM python:3.11-slim
 
-# Set environment variables (optional but good practice)
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
-# Prevents python from writing .pyc files
 ENV PYTHONUNBUFFERED=1
-git :# Force stdout/stderr streams to be unbuffered
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Install system dependencies if needed (pyserial might need some)
-# For Debian/Ubuntu based images (like python:3.11-slim):
-# RUN apt-get update && apt-get install -y --no-install-recommends some-package && rm -rf /var/lib/apt/lists/*
-# (Check pyserial docs if you encounter issues, but often not needed for basic use)
+# Install basics (sqlite3 client is useful for debugging inside container)
+RUN apt-get update && apt-get install -y --no-install-recommends sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy just the requirements first to leverage Docker cache
+# Copy requirements first for caching
 COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code into the container
+# Copy the rest of the application code
 COPY . .
 
-# Create the data directory within the container image (optional, volume mount will create it too)
-# RUN mkdir data
+# Ensure the data directory exists inside the container
+RUN mkdir -p /app/data
 
-# Expose the port the API server runs on (from config.py)
+# Expose the API port
 EXPOSE 5000
 
-# --- Define the default command ---
-# Option 1: Run only the serial logger by default
-# CMD ["python", "serial_data_logger.py"]
-CMD ["python", "serial_data_logger.py"]
-# Option 2: Run only the API server by default
-CMD ["python", "api_server.py"]
-
-# Option 3: (More advanced) Use an entrypoint script or supervisor to run both.
-# For now, pick one default (like the API) and we'll run the logger separately or use docker-compose later.
+# Command to run both scripts
+# Run logger in the background (&)
+# Run API server in the foreground (keeps container running)
+# Use sh -c to handle the background process correctly
+CMD ["sh", "-c", "python serial_data_logger.py & python api_server.py"]
