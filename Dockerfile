@@ -35,7 +35,7 @@ EXPOSE 5000
 # --- Define the default command ---
 # Option 1: Run only the serial logger by default
 # CMD ["python", "serial_data_logger.py"]
-
+CMD ["python", "serial_data_logger.py"]
 # Option 2: Run only the API server by default
 CMD ["python", "api_server.py"]
 
