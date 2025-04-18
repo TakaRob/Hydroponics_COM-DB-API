@@ -1,0 +1,55 @@
+// --- Constants for Simulation Parameters ---
+// (Keep all the constants as defined before)
+const float PH_CENTER = 7.0;
+const float EC_CENTER = 1500.0;
+const float TEMP_CENTER = 25.0;
+const float PH_AMPLITUDE = 1.0;
+const float EC_AMPLITUDE = 500.0;
+const float TEMP_AMPLITUDE = 5.0;
+const float TIME_SCALING_FACTOR = 30000.0;
+const float PH_PHASE_SHIFT = 0.0;
+const float EC_PHASE_SHIFT = 1.57;
+const float TEMP_PHASE_SHIFT = 3.14;
+
+void setup() {
+  // Use the baud rate you will configure in config.py (e.g., 9600)
+  Serial.begin(9600);
+  // Optional: Wait for serial connection (important for some Arduinos like Leonardo/Micro)
+  // while (!Serial);
+  // You can remove the starting messages if you want only data
+  // Serial.println("Starting Sine Wave Sensor Simulation...");
+  // Serial.println("Format: SensorID,SensorType,Value");
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+  float angle = (float)currentTime / TIME_SCALING_FACTOR;
+
+  // --- Calculate Simulated Sensor Values ---
+  float pHValue = PH_CENTER + PH_AMPLITUDE * sin(angle + PH_PHASE_SHIFT);
+  float ECValue = EC_CENTER + EC_AMPLITUDE * sin(angle + EC_PHASE_SHIFT);
+  float tempValue = TEMP_CENTER + TEMP_AMPLITUDE * sin(angle + TEMP_PHASE_SHIFT);
+
+  // --- Print simulated readings in the specified format ---
+  // Format: "SensorID,SensorType,Value" (each on a new line)
+
+  Serial.print("PHProbe-Tank1,pH,");
+  Serial.println(pHValue, 2); // Use 2 decimal places for consistency
+
+  Serial.print("ECMeter-Tank1,EC,");
+  Serial.println(ECValue, 2);
+
+  Serial.print("TempProbe-Tank1,Water temperature,");
+  Serial.println(tempValue, 2);
+
+  // --- IMPORTANT: REMOVED THE SEPARATOR LINE ---
+  // Serial.println("------------------------------------"); // REMOVED
+
+  // Wait for the specified interval before the next batch of readings
+  delay(60000); // Wait 60 seconds
+}
+
+// --- Dummy Sensor Reading Functions (Not used, can be removed or kept) ---
+// float readPHSensor() { return 7.0; }
+// float readECSensor() { return 1500.0; }
+// float readTempSensor() { return 25.0; }
