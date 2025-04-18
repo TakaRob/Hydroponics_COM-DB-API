@@ -32,11 +32,9 @@ Quinn's instructions:
      --device=/dev/ttyACM0 \
      --env SERIAL_PORT=/dev/ttyACM0 \
      -p 5000:5000 \
-     -v /home/hydro/Desktop/rasppardapi-db_DATA:/app/data/sensor_data.db \
      takajirobson/rasppardapi:latest
    ```
-   - This mounts your host file `/home/hydro/Desktop/rasppardapi-db_DATA` as `/app/data/sensor_data.db` inside the container.
-   - This ensures your database is never deleted by Docker and is always accessible from your Desktop.
+   - This is the basic command without bind mounts or volumes. The database will be stored inside the container and will be reset if the container is removed.
 5. **Test the API:**
    ```bash
    curl http://localhost:5000/readings
