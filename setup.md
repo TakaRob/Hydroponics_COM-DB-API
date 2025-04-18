@@ -1,6 +1,6 @@
 # Setup Instructions for Hydroponics COM-DB-API
 
-This guide covers setup for both deployment on a Raspberry Pi and development (Windows/WSL2).
+This guide covers setup for both deployment on a Raspberry Pi (with multi-architecture Docker image) and development (Windows/WSL2).
 
 ---
 
@@ -19,25 +19,39 @@ This guide covers setup for both deployment on a Raspberry Pi and development (W
    ls /dev/ttyACM* /dev/ttyUSB*
    sudo chmod 666 /dev/ttyACM0
    ```
-3. **Pull your image from Docker Hub:**
+3. **Pull the multi-arch image from Docker Hub:**
    ```bash
-   docker pull yourusername/hydroponics-db-api:latest
+   docker pull takajirobson/rasppardapi:latest
    ```
 4. **Run the container:**
    ```bash
-   docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 yourusername/hydroponics-db-api:latest
+   docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 takajirobson/rasppardapi:latest
    ```
 5. **Test the API:**
    ```bash
    curl http://localhost:5000/readings
+   
+   curl http://<raspberry-pi-ip>:5000/status
    ```
 
 ---
 
+## Building and Publishing the Multi-Architecture Docker Image (from your development machine)
+
+1. **Enable Docker Buildx (first time only):**
+   ```bash
+   docker buildx create --use
+   ```
+2. **Build and push the multi-architecture image:**
+   ```bash
+   docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 -t takajirobson/rasppardapi:latest --push .
+   ```
+- This will build and publish a single image compatible with x86_64 and all Raspberry Pi models.
+
+---
+
 ## Notes
-- Replace `yourusername` with your Docker Hub username.
 - Always check your Arduino's actual device name (`/dev/ttyACM0`, `/dev/ttyUSB0`, etc).
-- For multi-architecture Docker images (for Raspberry Pi), consider using `docker buildx`.
 - For troubleshooting, check permissions and Docker logs.
 
 ---
@@ -97,7 +111,7 @@ curl http://localhost:5000/readings -o readings.json
    ```bash
    cd /mnt/c/Users/takaj/Desktop/COM_DB_API
    ```
-5. **Build and run Docker:**
+5. **Build and run Docker (for local testing):**
    ```bash
    docker build -t hydroponics-db-api .
    docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 hydroponics-db-api
