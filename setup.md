@@ -24,10 +24,29 @@ Quinn's instructions:
    ```bash
    docker pull takajirobson/rasppardapi:latest
    ```
-4. **Run the container:**
-   ```bash
-   docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 takajirobson/rasppardapi:latest
+4. **Run the container with your database file as a bind mount:**
+   > This command mounts your existing database file (`rasppardapi-db_DATA`) from your Desktop into the container, so your data is always persistent and accessible.
+
+   **On Windows (PowerShell):**
+   ```powershell
+   docker run --rm -it `
+     --device=/dev/ttyACM0 `
+     --env SERIAL_PORT=/dev/ttyACM0 `
+     -p 5000:5000 `
+     -v C:\Users\takaj\Desktop\rasppardapi-db_DATA:/app/data/rasppardapi-db_DATA `
+     takajirobson/rasppardapi:latest
    ```
+   **On Linux (adjust path as needed):**
+   ```bash
+   docker run --rm -it \
+     --device=/dev/ttyACM0 \
+     --env SERIAL_PORT=/dev/ttyACM0 \
+     -p 5000:5000 \
+     -v /home/pi/Desktop/rasppardapi-db_DATA:/app/data/rasppardapi-db_DATA \
+     takajirobson/rasppardapi:latest
+   ```
+   - Replace `/app/data/rasppardapi-db_DATA` with the path your app expects inside the container.
+   - This ensures your database is never deleted by Docker and is always accessible from your Desktop.
 5. **Test the API:**
    ```bash
    curl http://localhost:5000/readings
@@ -64,6 +83,7 @@ Things that work to access the api
 ```bash
 curl http://raspberrypi.middlebury.edu:5000/readings
 curl raspberrypi.middlebury.edu:5000/readings
+curl raspberrypi:5000/readings
 ```
 ---
 
@@ -79,7 +99,7 @@ curl raspberrypi.middlebury.edu:5000/readings
    ```
 - This will build and publish a single image compatible with x86_64 and all Raspberry Pi models.
 
----
+
 
 ## Notes
 - Always check your Arduino's actual device name (`/dev/ttyACM0`, `/dev/ttyUSB0`, etc).
