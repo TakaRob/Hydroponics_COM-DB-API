@@ -2,10 +2,13 @@
 import os
 
 # Serial Port Configuration
-SERIAL_PORT = '/dev/ttyACM0'  # --- MUST SET --- e.g., '/dev/ttyACM0', '/dev/ttyUSB0', 'COM3' For Laptop 'COM3'
+
+SERIAL_PORT = os.environ.get("SERIAL_PORT", "/dev/ttyACM0")
+#SERIAL_PORT = '/dev/ttyACM0'  # --- MUST SET --- e.g., '/dev/ttyACM0', '/dev/ttyUSB0', 'COM3' For Laptop 'COM3'
+#SERIAL_PORT = 'COM3'  # --- MUST SET --- e.g., '/dev/ttyACM0', '/dev/ttyUSB0', 'COM3' For Laptop 'COM3'
 SERIAL_BAUD_RATE = 9600       # Match Arduino's Serial.begin() rate
 SERIAL_TIMEOUT = 1            # Read timeout in seconds
-SERIAL_RETRY_DELAY = 5        # Seconds to wait before retrying connection
+SERIAL_RETRY_DELAY = 5        # Second# s to wait before retrying connection
 
 # --- Database Configuration ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
