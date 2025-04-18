@@ -24,19 +24,9 @@ Quinn's instructions:
    ```bash
    docker pull takajirobson/rasppardapi:latest
    ```
-4. **Run the container with your database file as a bind mount:**
+4. **Run the container with your database file as a bind mount (Raspberry Pi/Linux):**
    > This command mounts your existing database file (`rasppardapi-db_DATA`) from your Desktop into the container, so your data is always persistent and accessible.
 
-   **On Windows (PowerShell):**
-   ```powershell
-   docker run --rm -it `
-     --device=/dev/ttyACM0 `
-     --env SERIAL_PORT=/dev/ttyACM0 `
-     -p 5000:5000 `
-     -v C:\Users\takaj\Desktop\rasppardapi-db_DATA:/app/data/rasppardapi-db_DATA `
-     takajirobson/rasppardapi:latest
-   ```
-   **On Linux (adjust path as needed):**
    ```bash
    docker run --rm -it \
      --device=/dev/ttyACM0 \
@@ -59,6 +49,23 @@ Quinn's instructions:
    hostname -I 
    ```
 That should be it. 
+
+---
+
+## Running the Container on Windows (PowerShell)
+If you want to run the container and mount your database file from your Windows Desktop:
+
+```powershell
+docker run --rm -it `
+  --device=/dev/ttyACM0 `
+  --env SERIAL_PORT=/dev/ttyACM0 `
+  -p 5000:5000 `
+  -v C:\Users\takaj\Desktop\rasppardapi-db_DATA:/app/data/rasppardapi-db_DATA `
+  takajirobson/rasppardapi:latest
+```
+
+- Adjust the path if your username or folder is different.
+- This ensures your database is never deleted by Docker and is always accessible from your Desktop.
 
 ## (Optional, Recommended) Enable raspberrypi.local Access with Avahi
 
