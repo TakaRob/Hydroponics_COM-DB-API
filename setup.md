@@ -6,6 +6,7 @@ This guide covers setup for both deployment on a Raspberry Pi (with multi-archit
 
 ## Raspberry Pi Deployment (Recommended for Production)
 
+Quinn's instructions:
 1. **Install Docker:**
    ```bash
    sudo apt-get update
@@ -16,7 +17,7 @@ This guide covers setup for both deployment on a Raspberry Pi (with multi-archit
    ```
 2. **Plug in Arduino and check device:**
    ```bash
-   ls /dev/ttyACM* /dev/ttyUSB*
+   ls /dev/ttyACM* /dev/ttyUSB* #This is where the arduino connects from, 
    sudo chmod 666 /dev/ttyACM0
    ```
 3. **Pull the multi-arch image from Docker Hub:**
@@ -32,8 +33,38 @@ This guide covers setup for both deployment on a Raspberry Pi (with multi-archit
    curl http://localhost:5000/readings
    
    curl http://<raspberry-pi-ip>:5000/status
-   ```
 
+   ```
+   Check this on the pi by doing 
+   ```bash
+   hostname -I 
+   ```
+That should be it. 
+
+## (Optional, Recommended) Enable raspberrypi.local Access with Avahi
+
+To access your Raspberry Pi using `raspberrypi.local` (instead of its numeric IP), enable the Avahi daemon. This allows other devices on your network to resolve the Pi's hostname automatically.
+
+**On your Raspberry Pi, run:**
+```bash
+sudo apt update
+sudo apt install avahi-daemon
+sudo systemctl enable avahi-daemon
+sudo systemctl start avahi-daemon
+```
+
+You can verify it's running with:
+```bash
+systemctl status avahi-daemon
+```
+
+Now, you can use `raspberrypi.middlebury.edu` in your browser or terminal to access the API! Note that you should use the `.middlebury.edu` hostname for both `curl` and browser access.
+
+Things that work to access the api
+```bash
+curl http://raspberrypi.middlebury.edu:5000/readings
+curl raspberrypi.middlebury.edu:5000/readings
+```
 ---
 
 ## Building and Publishing the Multi-Architecture Docker Image (from your development machine)

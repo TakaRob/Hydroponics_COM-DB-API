@@ -22,3 +22,9 @@ test_sensor_data.db
 
 # Local data directory (we mount this as a volume, don't copy it)
 data/
+
+# Jupyter notebook for local analysis
+graph_readings.ipynb
+
+# Manual-entry GUI (exclude from Docker image)
+manual-entry-gui/
