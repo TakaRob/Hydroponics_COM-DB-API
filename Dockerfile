@@ -22,7 +22,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Ensure the data directory exists inside the container
+# While VOLUME implies the directory, creating it explicitly doesn't hurt
+# and ensures correct permissions might be set by WORKDIR user if applicable.
 RUN mkdir -p /app/data
+
+# ---> Add the VOLUME instruction here <---
+# Mark the /app/data directory as containing externally mountable volume data
+VOLUME /app/data
+
 
 # Expose the API port
 EXPOSE 5000
