@@ -23,7 +23,7 @@ This method uses usbipd-win to share the Arduino's COM port as a USB device into
 
 4. **Attach the device to WSL:**
    ```powershell
-   usbipd attach --wsl --busid 2-2
+   sudo usbipd attach --wsl --busid 2-2
    ```
 
 5. **In WSL (Ubuntu), verify the device appears:**
@@ -47,8 +47,14 @@ sudo usermod -aG dialout $USER
 7. **Use this device in your Docker run command or application config:**
    - Example for ttyS3:
      ```bash
-     docker run --rm -it --device=/dev/ttyS3 --env SERIAL_PORT=/dev/ttyS3 -p 5000:5000 takajirobson/rasppardapi:latest
+     docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 hydroponics-db-api
      ```
+6. **Test the API:**
+   ```bash
+   curl http://localhost:5000/readings
+   ```
+7. **Look at the jupyter notebook to test the values**
+
 
 **Troubleshooting:**
 - If you don't see the device in WSL, make sure you have the correct busid and that usbipd-win is running as Administrator.
@@ -56,3 +62,17 @@ sudo usermod -aG dialout $USER
 - The device name may change depending on your system and how many serial devices are plugged in.
 
 ---
+
+
+## Building and Publishing the Multi-Architecture Docker Image (from your development machine)
+
+1. **Enable Docker Buildx (first time only):**
+   ```bash
+   docker buildx create --use
+   ```
+2. **Build and push the multi-architecture image:**
+   ```bash
+   docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 -t takajirobson/rasppardapi:latest --push .
+   ```
+- This will build and publish a single image compatible with x86_64 and all Raspberry Pi models.
+
