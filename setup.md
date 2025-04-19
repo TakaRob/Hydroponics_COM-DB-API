@@ -24,17 +24,19 @@ Quinn's instructions:
    ```bash
    docker pull takajirobson/rasppardapi:latest
    ```
-4. **Run the container with your database file as a bind mount (Raspberry Pi/Linux):**
-   > This command runs the image, but since data is stored inside once it ends the data is also lost. I am working on a fix.
-
+4. **Run the container with your database file in the volume /app/data (Raspberry Pi/Linux):**
+   
    ```bash
    docker run --rm -it \
-     --device=/dev/ttyACM0 \
-     --env SERIAL_PORT=/dev/ttyACM0 \
-     -p 5000:5000 \
-     takajirobson/rasppardapi:latest
+   --device=/dev/ttyACM0 \
+   --env SERIAL_PORT=/dev/ttyACM0 \
+   -p 5000:5000 \
+   -v hydroponics-db-data:/app/data \
+   takajirobson/rasppardapi:latest
    ```
-   - This is the basic command without bind mounts or volumes. The database will be stored inside the container and will be reset if the container is removed.
+
+
+
 5. **Test the API:**
    ```bash
    curl http://localhost:5000/readings
