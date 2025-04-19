@@ -32,6 +32,11 @@ This method uses usbipd-win to share the Arduino's COM port as a USB device into
    ```
    - Your Arduino should show up as `/dev/ttyACM0`, `/dev/ttyUSB0`, or `/dev/ttyS3` (depending on your system).
 
+check which one is mounted 
+```
+dmesg | grep ttyACM
+sudo usermod -aG dialout $USER
+```
 6. **(Optional) Set permissions if needed:**
    ```bash
    sudo chmod 666 /dev/ttyS3
