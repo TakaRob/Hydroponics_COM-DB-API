@@ -1,37 +1,87 @@
-# Raspberry Pi Hydroponics Logger & API
+# Hydroponics Logger & API — Docker-First
 
-This project runs entirely on a Raspberry Pi. It reads sensor data from an Arduino connected via serial port, processes the data into structured objects, timestamps it, stores it in a local SQLite database, and provides a REST API to query the stored data. A manual entry GUI is also included for backup/testing.
+**This project is now distributed primarily as a ready-to-use Docker image.**
 
-## For whomever puts this on the rasppi.
-Steps:
-1. Go through `config.py` and set up the serial port, database name, and API port. Ensure `ARDUINO_DATA_ORDER` and `ARDUINO_DATA_SEPARATOR` match your Arduino output exactly.
-2. Install SQLite if not already present (`sudo apt-get update && sudo apt-get install sqlite3`).
-3. Follow the Setup and Running instructions below.
-4. To run the data logger and API server continuously in the background, consider using tools like `tmux`, `screen`, or setting up `systemd` services. **Docker deployment is now supported and recommended for both Raspberry Pi and development environments.** See the new setup instructions below for details. If Docker is not set up, you can still run the scripts in a terminal as before.
+- No complicated setup.
+- No need to install Python or dependencies.
+- No code or config changes required for most users.
+- Works on Raspberry Pi or any Linux/WSL2/Windows system with Docker.
 
-## Architecture
+## Quick Start (Docker)
 
-Arduino (Sensors) --> Serial Port --> Raspberry Pi --> Python Script (`serial_data_logger.py`) --> Data Processing (`data_processor.py` using `models.SensorReading`) --> SQLite DB (`sensor_data.db`) --> Flask API (`api_server.py`)
+# First time users go to SETUP.md
+# If running on a non-linux system, go to setup_appendix.md
+
+# MAKE SURE TO CHECK SETUP.md if anything happens, like the serial port not working or if you want avahi enabled.
+
+1. **Plug in your Arduino** to the machine (Raspberry Pi or PC running Docker).
+2. **Pull and run the image:**
+   ```bash
+   docker pull takajirobson/rasppardapi:latest
+   docker run --rm -it \
+     --device=/dev/ttyACM0 \
+     --env SERIAL_PORT=/dev/ttyACM0 \
+     -p 5000:5000 \
+     -v hydroponics-db-data:/app/data \
+     takajirobson/rasppardapi:latest
+   ```
+   - For Windows/WSL2/usbipd, see [`setup_appendix.md`](./setup_appendix.md) for serial port bridging.
+3. **Test the API:**
+   ```bash
+   curl http://localhost:5000/readings
+   ```
+
+---
+
+## If you want to change the sensor readings, make sure to change
+- SensorReading in models.py
+- sensor_readings in database_setup.py
+- sensor_id in data_processor.py
+- sensor_id in api_server.py
+- ARDUINO_DATA_ORDER in config.py
+
+
+
+---
+
+## Project Structure (For Reference Only)
+- `config.py`: Serial port, baud rate, data format. **Defaults work for most users.**
+- `models.py`, `data_processor.py`, `serial_reader.py`: Data handling logic (inside the image).
+- `api_server.py`, `serial_data_logger.py`: API and logger logic (run automatically in Docker).
+- `manual_entry_gui.py`: Optional manual entry GUI (requires desktop, not needed for headless use).
+- `setup.md`, `setup_appendix.md`: Full and advanced setup guides.
+
+---
+
+## API Endpoints (Default)
+- `GET /readings`: Fetch sensor readings. Optional query params: `limit`, `sensor_id`, `type`.
+- `GET /status`: Health check.
+
+---
+
+
+## Troubleshooting & Customization
+- See [`setup.md`](./setup.md) and [`setup_appendix.md`](./setup_appendix.md) for:
+  - Windows/WSL2/usbipd/COM port bridging
+  - Changing serial port or device
+  - Advanced configuration
+- For the test Arduino code example, see arduinosintest.txt
+
+---
 
 ## Project Structure
 
--   `config.py`: Configuration settings (Serial Port, Baud Rate, Database name, API port, Arduino data format). **MODIFY THIS FIRST!**
+-   `config.py`: Configuration settings (Serial Port, Baud Rate, Database name, API port, Arduino data format). 
 -   `requirements.txt`: Python dependencies (`Flask`, `pyserial`).
 -   `models.py`: Defines data structures, primarily the `SensorReading` class which represents a single, structured sensor measurement.
 -   `serial_reader.py`: Helper module for handling serial communication with the Arduino.
 -   `data_processor.py`: Parses raw serial data into `SensorReading` objects, handles database interactions (storage and retrieval).
 -   `database_setup.py`: (Optional but Recommended) Script to explicitly initialize the database schema. Can be run once initially.
 -   `api_server.py`: Runs a Flask-based REST API server (on the Pi) to query the database.
--   `serial_data_logger.py`: Main script to continuously listen to the serial port, process data using `data_processor`, and store it via `data_processor`. **RUN THIS FOR DATA COLLECTION.**
+-   `serial_data_logger.py`: Main script to continuously listen to the serial port, process data using `data_processor`, and store it via `data_processor`. 
 -   `manual_entry_gui.py`: A GUI application (runnable on Pi desktop) for manually entering sensor data (creates `SensorReading` objects).
 -   `.gitignore`: Standard Git ignore file.
 -   `README.md`: This file.
-
-## Setup
-
-**For all deployment and development environments, see the detailed setup guides:**
-- [`setup.md`](./setup.md) — Covers Docker deployment (multi-arch), Raspberry Pi setup, and Windows/WSL2/usbipd integration for Arduino serial.
-- [`setup_appendix.md`](./setup_appendix.md) — Step-by-step for bridging Windows COM ports to WSL/Ubuntu for Arduino serial access.
 
 **Quick summary for legacy/manual setup:**
 
@@ -49,8 +99,7 @@ Arduino (Sensors) --> Serial Port --> Raspberry Pi --> Python Script (`serial_da
     pip install -r requirements.txt
     ```
 4.  **Configure the application:**
-    - Edit `config.py` as before for serial port, baud rate, and Arduino data format.
-    - See `setup.md` for device/port details on Pi and WSL2/Windows.
+    - Edit `config.py` as before for serial port, baud rate, and Arduino data format. set up the serial port to the right serial port, check device manager ex: 'COM3' if running on windows.
 5.  **Set up the Arduino:**
     -   Connect the Arduino to the Raspberry Pi via USB.
     -   Upload Arduino code that reads your sensors and prints the data to the Serial port. Each complete reading should be on a new line (`println`). The format must match `ARDUINO_DATA_SEPARATOR` and the fields must be in the order specified by `ARDUINO_DATA_ORDER`.
@@ -80,20 +129,10 @@ Arduino (Sensors) --> Serial Port --> Raspberry Pi --> Python Script (`serial_da
     ```bash
     sudo usermod -a -G dialout $USER
     ```
-    You'll need to **log out and log back in** (or reboot) for this change to take effect.
 
 ## Running the Application
 
-### Docker (Recommended)
-See [`setup.md`](./setup.md) for full Docker usage. Typical commands:
-```bash
-docker pull takajirobson/rasppardapi:latest
-docker run --rm -it --device=/dev/ttyACM0 --env SERIAL_PORT=/dev/ttyACM0 -p 5000:5000 takajirobson/rasppardapi:latest
-```
-- For Windows/WSL2/usbipd, see [`setup_appendix.md`](./setup_appendix.md) for how to bridge the Arduino serial port.
-
 ### Manual Python (Legacy)
-You typically need two terminals/processes running in the background (e.g., using `tmux` or `screen`): one for the data logger and one for the API server.
 
 1.  **Initialize the Database (Run once):**
     ```bash
@@ -113,8 +152,6 @@ You typically need two terminals/processes running in the background (e.g., usin
     ```
 
 ## API Endpoints
-
-(Served from the Raspberry Pi at `http://<raspberry-pi-ip>:<API_PORT>`)
 
 -   `GET /readings`: Fetches recent sensor readings.
     -   **Query Parameters:**
